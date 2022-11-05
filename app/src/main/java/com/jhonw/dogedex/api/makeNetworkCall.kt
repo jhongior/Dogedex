@@ -5,7 +5,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import java.net.UnknownHostException
 
-suspend fun <T> makeNetworkCall(call: suspend () -> T) : ApiResponseStatus<T> {
+suspend fun <T> makeNetworkCall(call: suspend () -> T): ApiResponseStatus<T> {
     return withContext(Dispatchers.IO) {
         try {
             //el call trae todos los datos enviados desde el DogRepository para ejecutarsen
@@ -13,7 +13,13 @@ suspend fun <T> makeNetworkCall(call: suspend () -> T) : ApiResponseStatus<T> {
         } catch (e: UnknownHostException) {
             ApiResponseStatus.Error("No hay conexión a internet")
         } catch (e: Exception) {
-            ApiResponseStatus.Error("Error desconocido")
+            val errorMessage = when (e.message) {
+                "sign_up_error" -> "sign_up_error"
+                "sign_in_error" -> "sign_in_error"
+                "user_already_exists" -> "user_already_exists"
+                else -> "error desconocido"
+            }
+            ApiResponseStatus.Error(errorMessage)
         }
 
         //getFakeDogs()

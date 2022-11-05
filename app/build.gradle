@@ -3,6 +3,7 @@ plugins {
     id 'org.jetbrains.kotlin.android'
     id 'kotlin-kapt'
     id 'kotlin-parcelize'
+    id 'androidx.navigation.safeargs.kotlin'
 }
 
 android {
@@ -57,4 +58,8 @@ dependencies {
     //dependencia de coil para mostrar imagenes, se usa esta en vez de glide y piccaso por que
     //coil funciona con compose
     implementation 'io.coil-kt:coil:1.4.0'
+
+    //dependencia para navegar entre fragment
+    implementation 'androidx.navigation:navigation-fragment-ktx:2.5.3'
+    implementation 'androidx.navigation:navigation-ui-ktx:2.5.3'
 }

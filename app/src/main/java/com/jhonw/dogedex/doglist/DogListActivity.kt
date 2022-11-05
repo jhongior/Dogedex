@@ -7,10 +7,7 @@ import android.view.View
 import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.recyclerview.widget.GridLayoutManager
-import androidx.recyclerview.widget.LinearLayoutManager
-import com.jhonw.dogedex.Dog
 import com.jhonw.dogedex.GRID_SPAN_COUNT
-import com.jhonw.dogedex.R
 import com.jhonw.dogedex.api.ApiResponseStatus
 import com.jhonw.dogedex.databinding.ActivityDogListBinding
 import com.jhonw.dogedex.dogdetail.DogDetailActivity

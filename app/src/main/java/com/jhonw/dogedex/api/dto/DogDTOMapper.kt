@@ -1,6 +1,6 @@
 package com.jhonw.dogedex.api.dto
 
-import com.jhonw.dogedex.Dog
+import com.jhonw.dogedex.model.Dog
 
 class DogDTOMapper {
 

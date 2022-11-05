@@ -2,10 +2,9 @@ package com.jhonw.dogedex.dogdetail
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.view.LayoutInflater
 import android.widget.Toast
 import coil.load
-import com.jhonw.dogedex.Dog
+import com.jhonw.dogedex.model.Dog
 import com.jhonw.dogedex.R
 import com.jhonw.dogedex.databinding.ActivityDogDetailBinding
 
