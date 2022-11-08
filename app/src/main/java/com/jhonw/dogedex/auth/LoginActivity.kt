@@ -12,6 +12,7 @@ import com.jhonw.dogedex.MainActivity
 import com.jhonw.dogedex.R
 import com.jhonw.dogedex.api.ApiResponseStatus
 import com.jhonw.dogedex.databinding.ActivityLoginBinding
+import com.jhonw.dogedex.model.User
 
 class LoginActivity : AppCompatActivity(), LoginFragment.LoginFragmentActions,
     SignUpFragment.SignUpFragmentActions {
@@ -40,6 +41,7 @@ class LoginActivity : AppCompatActivity(), LoginFragment.LoginFragmentActions,
 
         viewModel.user.observe(this) { user ->
             if (user != null) {
+                User.setLoggedInUser(this, user)
                 startMainActivity()
             }
         }
@@ -48,6 +50,7 @@ class LoginActivity : AppCompatActivity(), LoginFragment.LoginFragmentActions,
     private fun startMainActivity() {
         intent = Intent(this, MainActivity::class.java)
         startActivity(intent)
+        finish()
     }
 
     private fun showErrorDialog(messageId: String) {
@@ -65,6 +68,10 @@ class LoginActivity : AppCompatActivity(), LoginFragment.LoginFragmentActions,
     override fun onRegisterButtonClick() {
         findNavController(R.id.nav_host_fragment)
             .navigate(LoginFragmentDirections.actionLoginFragmentToSignUpFragment())
+    }
+
+    override fun onLoginFieldsValidated(email: String, password: String) {
+        viewModel.login(email, password)
     }
 
     override fun onSignUpFieldsValidated(

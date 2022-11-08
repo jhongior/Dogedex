@@ -8,8 +8,8 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import com.jhonw.dogedex.R
-import com.jhonw.dogedex.databinding.FragmentLoginBinding
 import com.jhonw.dogedex.databinding.FragmentSignUpBinding
+import com.jhonw.dogedex.isValidEmail
 
 class SignUpFragment : Fragment() {
 
@@ -78,10 +78,5 @@ class SignUpFragment : Fragment() {
         }
 
         signUpFragmentActions.onSignUpFieldsValidated(email, password, passwordConfir)
-    }
-
-    private fun isValidEmail(email: String?): Boolean {
-        return !email.isNullOrEmpty() &&
-                Patterns.EMAIL_ADDRESS.matcher(email).matches()
     }
 }
