@@ -3,12 +3,60 @@ package com.jhonw.dogedex.doglist
 import com.jhonw.dogedex.model.Dog
 import com.jhonw.dogedex.api.ApiResponseStatus
 import com.jhonw.dogedex.api.DogsApi.retrofitService
+import com.jhonw.dogedex.api.dto.AddDogToUserDTO
 import com.jhonw.dogedex.api.dto.DogDTOMapper
 import com.jhonw.dogedex.api.makeNetworkCall
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
+import kotlinx.coroutines.withContext
+import java.lang.Exception
 
 class DogRepository {
 
-    suspend fun downLoadDogs(): ApiResponseStatus<List<Dog>> /*List<Dog>*/ {
+    suspend fun getDogCollection(): ApiResponseStatus<List<Dog>> {
+        return withContext(Dispatchers.IO) {
+            val allDogsListDeferred = async { downLoadDogs() }
+            val userDogsListDeferred = async { getUserDogs() }
+
+            /*
+            el Deferred es asincrono y lo que hace es que empieza varias tareas al mismo tiempo pero espera que termine
+            una para seguir con la otra, await espera que un proceso termine
+             */
+            val allDogsListResponse = allDogsListDeferred.await()
+            val userDogsListResponse = userDogsListDeferred.await()
+
+            if (allDogsListResponse is ApiResponseStatus.Error) {
+                allDogsListResponse
+            } else if (userDogsListResponse is ApiResponseStatus.Error) {
+                userDogsListResponse
+            } else if (allDogsListResponse is ApiResponseStatus.Success && userDogsListResponse is ApiResponseStatus.Success) {
+                ApiResponseStatus.Success(
+                    getCollectionList(
+                        allDogsListResponse.data,
+                        userDogsListResponse.data
+                    )
+                )
+            } else {
+                ApiResponseStatus.Error("Existe algun error")
+            }
+        }
+
+    }
+
+    private fun getCollectionList(allDogList: List<Dog>, userDogList: List<Dog>): List<Dog> {
+        return allDogList.map {
+            if (userDogList.contains(it)) {
+                it
+            } else {
+                Dog(
+                    0, it.index, "", "", "", "", "", "",
+                    "", "", "", inCollection = false
+                )
+            }
+        }.sorted()
+    }
+
+    private suspend fun downLoadDogs(): ApiResponseStatus<List<Dog>> /*List<Dog>*/ {
         //se usa la clase makeNetworkCall para manejar recursividad en caso de varias
         //peticiones a apis
         return makeNetworkCall {
@@ -21,6 +69,22 @@ class DogRepository {
             //ya no se devuelve una lista de dog sino un status y este success trae la lista
             dogDTOMapper.fromDogDTOListToDogDomainList(dogDTOList)
         }
+    }
+
+    suspend fun addDogToUser(dogId: Long): ApiResponseStatus<Any> = makeNetworkCall {
+        val addDogToUserDTO = AddDogToUserDTO(dogId)
+        val defaultResponse = retrofitService.addDogToUser(addDogToUserDTO)
+
+        if (!defaultResponse.isSuccess) {
+            throw Exception(defaultResponse.message)
+        }
+    }
+
+    private suspend fun getUserDogs(): ApiResponseStatus<List<Dog>> = makeNetworkCall {
+        val dogListApiResponse = retrofitService.getUserDogs()
+        val dogDTOList = dogListApiResponse.data.dogs
+        val dogDTOMapper = DogDTOMapper()
+        dogDTOMapper.fromDogDTOListToDogDomainList(dogDTOList)
     }
 
     private fun getFakeDogs(): MutableList<Dog> {

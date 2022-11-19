@@ -3,8 +3,10 @@ package com.jhonw.dogedex
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import com.jhonw.dogedex.api.ApiServiceInterceptor
 import com.jhonw.dogedex.auth.LoginActivity
 import com.jhonw.dogedex.databinding.ActivityMainBinding
+import com.jhonw.dogedex.doglist.DogListActivity
 import com.jhonw.dogedex.model.User
 import com.jhonw.dogedex.settings.SettingsActivity
 
@@ -19,11 +21,22 @@ class MainActivity : AppCompatActivity() {
         if (user == null) {
             openLoginActivity()
             return
+        } else {
+            ApiServiceInterceptor.setSessionToken(user.authenticationToken)
         }
 
         binding.settingsFab.setOnClickListener {
             openSettingsActivity()
         }
+
+        binding.dogListFab.setOnClickListener {
+            openDogListActivity()
+        }
+    }
+
+    private fun openDogListActivity() {
+        intent = Intent(this, DogListActivity::class.java)
+        startActivity(intent)
     }
 
     private fun openSettingsActivity() {
