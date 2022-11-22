@@ -25,4 +25,10 @@
         <item name="android:fontFamily">sans-serif-medium</item>
         <item name="android:textColor">@color/text_black</item>
     </style>
+    <style name="Theme.Dogedex.NoActionBar">
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
+    </style>
+    <style name="Theme.Dogedex.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
+    <style name="Theme.Dogedex.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
 </resources>
