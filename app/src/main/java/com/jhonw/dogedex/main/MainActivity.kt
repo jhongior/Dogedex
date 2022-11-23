@@ -1,27 +1,40 @@
-package com.jhonw.dogedex
+package com.jhonw.dogedex.main
 
 import android.Manifest
+import android.annotation.SuppressLint
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.graphics.*
 import android.os.Build
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.view.View
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.activity.viewModels
 import androidx.appcompat.app.AlertDialog
 import androidx.camera.core.*
 import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.LifecycleOwner
+import com.hackaprende.dogedex.machinelearning.Classifier
+import com.jhonw.dogedex.*
+import com.jhonw.dogedex.R
 import com.jhonw.dogedex.WholeImageActivity.Companion.PHOTO_URI_KEY
+import com.jhonw.dogedex.api.ApiResponseStatus
 import com.jhonw.dogedex.api.ApiServiceInterceptor
 import com.jhonw.dogedex.auth.LoginActivity
 import com.jhonw.dogedex.databinding.ActivityMainBinding
+import com.jhonw.dogedex.dogdetail.DogDetailActivity
+import com.jhonw.dogedex.dogdetail.DogDetailActivity.Companion.IS_RECOGNITION_KEY
 import com.jhonw.dogedex.doglist.DogListActivity
+import com.jhonw.dogedex.machinelearning.DogRecognition
+import com.jhonw.dogedex.model.Dog
 import com.jhonw.dogedex.model.User
 import com.jhonw.dogedex.settings.SettingsActivity
+import org.tensorflow.lite.support.common.FileUtil
+import java.io.ByteArrayOutputStream
 import java.io.File
-import java.util.concurrent.Executor
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
 
@@ -42,7 +55,9 @@ class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
     private lateinit var imageCapture: ImageCapture
     private lateinit var cameraExecutor: ExecutorService
+    private lateinit var classifier: Classifier
     private var isCameraReady = false
+    private val viewModel: MainViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -66,12 +81,51 @@ class MainActivity : AppCompatActivity() {
             openDogListActivity()
         }
 
-        binding.takePhotoFab.setOnClickListener {
+        /*binding.takePhotoFab.setOnClickListener {
             if (isCameraReady)
                 takePhoto()
+        }*/
+
+        viewModel.status.observe(this) { status ->
+
+            when (status) {
+                is ApiResponseStatus.Error -> {
+                    //ocultar el progress bar
+                    binding.loadingWheel.visibility = View.GONE
+                    Toast.makeText(this, status.message, Toast.LENGTH_LONG)
+                        .show()
+                }
+                is ApiResponseStatus.Loading -> binding.loadingWheel.visibility = View.VISIBLE
+                is ApiResponseStatus.Success -> binding.loadingWheel.visibility = View.GONE
+            }
+        }
+
+        viewModel.dog.observe(this) { dog ->
+            if (dog != null) {
+                openDogDetailActivity(dog)
+            }
+        }
+
+        viewModel.dogRecognition.observe(this) {
+            enabledTakePhotoButton(it)
         }
 
         requestCameraPermission()
+    }
+
+    private fun openDogDetailActivity(dog: Dog) {
+        val intent = Intent(this, DogDetailActivity::class.java)
+        intent.putExtra(DOG_KEY, dog)
+        intent.putExtra(IS_RECOGNITION_KEY, true)
+        startActivity(intent)
+    }
+
+    override fun onStart() {
+        super.onStart()
+        viewModel.setupClassifier(
+            FileUtil.loadMappedFile(this@MainActivity, MODEL_PATH),
+            FileUtil.loadLabels(this@MainActivity, LABEL_PATH)
+        )
     }
 
     override fun onDestroy() {
@@ -104,9 +158,10 @@ class MainActivity : AppCompatActivity() {
                 .setBackpressureStrategy(ImageAnalysis.STRATEGY_KEEP_ONLY_LATEST)
                 .build()
             imageAnalysis.setAnalyzer(cameraExecutor) { imageProxy ->
-                val rotationDegrees = imageProxy.imageInfo.rotationDegrees
+                //val rotationDegrees = imageProxy.imageInfo.rotationDegrees
+                viewModel.recognizeImage(imageProxy)
 
-                imageProxy.close()
+                //imageProxy.close()
             }
 
             cameraProvider.bindToLifecycle(
@@ -126,6 +181,18 @@ class MainActivity : AppCompatActivity() {
         }, ContextCompat.getMainExecutor(this))
     }
 
+    private fun enabledTakePhotoButton(dogRecognition: DogRecognition) {
+        if (dogRecognition.confidence > 70.0) {
+            binding.takePhotoFab.alpha = 1f
+            binding.takePhotoFab.setOnClickListener {
+                viewModel.getDogByMLId(dogRecognition.id)
+            }
+        } else {
+            binding.takePhotoFab.alpha = 0.2f
+            binding.takePhotoFab.setOnClickListener(null)
+        }
+    }
+
     private fun takePhoto() {
         val outputFileOptions = ImageCapture.OutputFileOptions.Builder(getOutputPhotoFile()).build()
         imageCapture.takePicture(outputFileOptions, cameraExecutor,
@@ -135,8 +202,13 @@ class MainActivity : AppCompatActivity() {
                 }
 
                 override fun onImageSaved(outputFileResults: ImageCapture.OutputFileResults) {
-                    val photoUri = outputFileResults.savedUri
-                    openWholeImageActivity(photoUri.toString())
+                    /*val photoUri = outputFileResults.savedUri
+
+                    val bitmap = BitmapFactory.decodeFile(photoUri?.path)
+                    classifier.recognizeImage(bitmap)
+                    val dogRecognition = classifier.recognizeImage(bitmap).first()
+                    viewModel.getDogByMLId(dogRecognition.id)*/
+                    //openWholeImageActivity(photoUri.toString())
                 }
             })
     }

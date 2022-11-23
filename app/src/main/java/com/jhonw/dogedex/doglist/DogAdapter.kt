@@ -30,10 +30,10 @@ class DogAdapter : ListAdapter<Dog, DogAdapter.DogViewHolder>(DiffCallback) {
         this.onItemClickListener = onItemClickListener
     }
 
-    private var onLongItemClickListener: ((Dog) -> Unit)? = null
-    fun setLongOnItemClickListener(onLongItemClickListener: (Dog) -> Unit) {
+    //private var onLongItemClickListener: ((Dog) -> Unit)? = null
+    /*fun setLongOnItemClickListener(onLongItemClickListener: (Dog) -> Unit) {
         this.onLongItemClickListener = onLongItemClickListener
-    }
+    }*/
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): DogViewHolder {
         val binding = DogListItemBinding.inflate(LayoutInflater.from(parent.context))
@@ -59,10 +59,10 @@ class DogAdapter : ListAdapter<Dog, DogAdapter.DogViewHolder>(DiffCallback) {
                 binding.dogListItemLayout.setOnClickListener {
                     onItemClickListener?.invoke(dog)
                 }
-                binding.dogListItemLayout.setOnLongClickListener {
+                /*binding.dogListItemLayout.setOnLongClickListener {
                     onLongItemClickListener?.invoke(dog)
                     true
-                }
+                }*/
                 binding.dogImage.load(dog.imageUrl)
             } else {
                 binding.dogImage.visibility = View.GONE
