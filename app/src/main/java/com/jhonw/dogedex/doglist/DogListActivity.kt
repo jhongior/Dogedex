@@ -5,20 +5,33 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.View
 import android.widget.Toast
+import androidx.activity.ComponentActivity
+import androidx.activity.compose.setContent
 import androidx.activity.viewModels
 import androidx.recyclerview.widget.GridLayoutManager
-import com.jhonw.dogedex.GRID_SPAN_COUNT
-import com.jhonw.dogedex.api.ApiResponseStatus
-import com.jhonw.dogedex.databinding.ActivityDogListBinding
-import com.jhonw.dogedex.dogdetail.DogDetailActivity
-import com.jhonw.dogedex.dogdetail.DogDetailActivity.Companion.DOG_KEY
+import coil.annotation.ExperimentalCoilApi
+import com.jhonw.dogedex.dogdetail.DogDetailComposeActivity
+import com.jhonw.dogedex.dogdetail.ui.theme.DogedexTheme
+import com.jhonw.dogedex.model.Dog
 
-class DogListActivity : AppCompatActivity() {
+@ExperimentalCoilApi
+class DogListActivity :
+    ComponentActivity() {//se deja de usar appcompatActivity por ComponentActivity para manejar compose
 
-    private val dogListViewModel: DogListViewModel by viewModels()
+    private val viewModel: DogListViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        setContent {
+            DogedexTheme {
+                val dogList = viewModel.dogList
+                DogListScreen(
+                    dogList = dogList.value,
+                    onDogClicked = ::openDogDetailActivity)
+            }
+        }
+
+        /*
         val binding = ActivityDogListBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
@@ -31,8 +44,8 @@ class DogListActivity : AppCompatActivity() {
         adapter.setOnItemClickListener {
             //pasar el dog a DogDetail, para esto se usa el plugin id 'kotlin-parcelize'
             // y se debe parcerlizar el objeto Dog
-            val intent = Intent(this, DogDetailActivity::class.java)
-            intent.putExtra(DOG_KEY, it)
+            val intent = Intent(this, DogDetailComposeActivity::class.java)
+            intent.putExtra(DogDetailComposeActivity.DOG_KEY, it)
             startActivity(intent)
         }
 
@@ -82,6 +95,14 @@ class DogListActivity : AppCompatActivity() {
                         .show()
                 }
         }*//*se hizo uso en este caso con los enum*/
-        }
+        }*/
+    }
+
+    private fun openDogDetailActivity(dog: Dog) {
+        //pasar el dog a DogDetail, para esto se usa el plugin id 'kotlin-parcelize'
+        // y se debe parcerlizar el objeto Dog
+        val intent = Intent(this, DogDetailComposeActivity::class.java)
+        intent.putExtra(DogDetailComposeActivity.DOG_KEY, dog)
+        startActivity(intent)
     }
 }

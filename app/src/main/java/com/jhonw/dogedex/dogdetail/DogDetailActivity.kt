@@ -18,7 +18,9 @@ class DogDetailActivity : AppCompatActivity() {
         const val IS_RECOGNITION_KEY = "is_recognition"
     }
 
-    private val viewModel: DogDetailViewModel by viewModels()
+    //se comenta para que no muestre errores ya que se va cambiar por compose
+
+    /*private val viewModel: DogDetailViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -63,5 +65,5 @@ class DogDetailActivity : AppCompatActivity() {
                 finish()
             }
         }
-    }
+    }*/
 }

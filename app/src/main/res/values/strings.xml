@@ -23,4 +23,8 @@
 
     <string name="hello_first_fragment">Hello first fragment</string>
     <string name="hello_second_fragment">Hello second fragment. Arg: %1$s</string>
+    <string name="title_activity_dog_detail_compose">DogDetailComposeActivity</string>
+    <string name="dialog_error_title">Oops, something happened!</string>
+    <string name="try_again">Try again</string>
+    <string name="error">Hubo un error</string>
 </resources>

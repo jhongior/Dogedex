@@ -1,5 +1,7 @@
 package com.jhonw.dogedex.doglist
 
+import androidx.compose.runtime.mutableStateListOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -10,6 +12,36 @@ import kotlinx.coroutines.launch
 
 class DogListViewModel : ViewModel() {
 
+    var dogList = mutableStateOf<List<Dog>>(listOf())
+        private set
+
+    var status = mutableStateOf<ApiResponseStatus<Any>?>(null)
+        private set
+
+    private val dogRepository = DogRepository()
+
+    init {
+        getDogCollection()
+        //downloadUserDogs()
+        //downLoadDogs()
+    }
+
+    private fun getDogCollection() {
+        viewModelScope.launch {
+            status.value = ApiResponseStatus.Loading()
+            handleResponseStatus(dogRepository.getDogCollection())
+        }
+    }
+
+    @Suppress("UNCHECKED_CAST")//se usa para quitar advertencia del as ApiResponseStatus<Any>
+    private fun handleResponseStatus(apiResponseStatus: ApiResponseStatus<List<Dog>>) {
+        if (apiResponseStatus is ApiResponseStatus.Success) {
+            dogList.value = apiResponseStatus.data!!
+        }
+        status.value = apiResponseStatus as ApiResponseStatus<Any>
+    }
+
+    /* se comenta para hacer uso de compose
     private val _dogList = MutableLiveData<List<Dog>>()
     val dogList: LiveData<List<Dog>>
         get() = _dogList
@@ -79,5 +111,5 @@ class DogListViewModel : ViewModel() {
             //downLoadDogs()
         }
         _status.value = apiResponseStatus
-    }
+    }*/
 }
