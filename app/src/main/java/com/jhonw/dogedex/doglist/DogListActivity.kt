@@ -8,12 +8,16 @@ import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
+import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.recyclerview.widget.GridLayoutManager
 import coil.annotation.ExperimentalCoilApi
 import com.jhonw.dogedex.dogdetail.DogDetailComposeActivity
 import com.jhonw.dogedex.dogdetail.ui.theme.DogedexTheme
 import com.jhonw.dogedex.model.Dog
 
+@ExperimentalMaterial3Api
+@ExperimentalFoundationApi
 @ExperimentalCoilApi
 class DogListActivity :
     ComponentActivity() {//se deja de usar appcompatActivity por ComponentActivity para manejar compose
@@ -23,11 +27,16 @@ class DogListActivity :
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
+            val status = viewModel.status
             DogedexTheme {
                 val dogList = viewModel.dogList
                 DogListScreen(
                     dogList = dogList.value,
-                    onDogClicked = ::openDogDetailActivity)
+                    onDogClicked = ::openDogDetailActivity,
+                    status.value,
+                    onErrorDialogDismiss = ::resetApiResponseStatus,
+                    onNavigationIconClick = ::onNavigationIconClick
+                )
             }
         }
 
@@ -104,5 +113,13 @@ class DogListActivity :
         val intent = Intent(this, DogDetailComposeActivity::class.java)
         intent.putExtra(DogDetailComposeActivity.DOG_KEY, dog)
         startActivity(intent)
+    }
+
+    private fun onNavigationIconClick() {
+        finish()
+    }
+
+    private fun resetApiResponseStatus() {
+        viewModel.resetApiResponseStatus()
     }
 }

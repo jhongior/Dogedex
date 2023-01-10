@@ -41,6 +41,11 @@ class DogListViewModel : ViewModel() {
         status.value = apiResponseStatus as ApiResponseStatus<Any>
     }
 
+    fun resetApiResponseStatus() {
+        status.value = null
+    }
+
+
     /* se comenta para hacer uso de compose
     private val _dogList = MutableLiveData<List<Dog>>()
     val dogList: LiveData<List<Dog>>

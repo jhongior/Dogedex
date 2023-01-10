@@ -25,6 +25,8 @@ import coil.annotation.ExperimentalCoilApi
 import coil.compose.rememberImagePainter
 import com.jhonw.dogedex.R
 import com.jhonw.dogedex.api.ApiResponseStatus
+import com.jhonw.dogedex.composables.ErrorDialog
+import com.jhonw.dogedex.composables.LoadingWheel
 import com.jhonw.dogedex.model.Dog
 
 @ExperimentalCoilApi
@@ -64,44 +66,11 @@ fun DogDetailScreen(
             LoadingWheel()
         } else if (status is ApiResponseStatus.Error) {
             ErrorDialog(
-                status,
+                status.message,
                 onErrorDialogDismiss
             )
         }
     }
-}
-
-@Composable
-fun LoadingWheel() {
-    Box(
-        modifier = Modifier
-            .fillMaxSize(),
-        contentAlignment = Alignment.Center
-    ) {
-        CircularProgressIndicator(
-            color = Color.Red
-        )
-    }
-}
-
-@Composable
-fun ErrorDialog(
-    status: ApiResponseStatus.Error<Any>,
-    onDialogDismiss: () -> Unit
-) {
-    AlertDialog(onDismissRequest = { /*TODO*/ },
-        title = {
-            Text(stringResource(R.string.dialog_error_title))
-        },
-        text = {
-            Text(stringResource(id = status.message.toString().toInt()))
-        },
-        confirmButton = {
-            Button(onClick = { onDialogDismiss() }) {
-                Text(stringResource(R.string.try_again))
-            }
-        }
-    )
 }
 
 @Composable

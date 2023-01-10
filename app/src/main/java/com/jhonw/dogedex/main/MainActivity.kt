@@ -15,6 +15,8 @@ import androidx.activity.viewModels
 import androidx.appcompat.app.AlertDialog
 import androidx.camera.core.*
 import androidx.camera.lifecycle.ProcessCameraProvider
+import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.LifecycleOwner
 import com.hackaprende.dogedex.machinelearning.Classifier
@@ -39,6 +41,8 @@ import java.io.File
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
 
+@ExperimentalMaterial3Api
+@ExperimentalFoundationApi
 class MainActivity : AppCompatActivity() {
 
     private val requestPermissionLauncher =
@@ -264,6 +268,8 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    @ExperimentalFoundationApi
+    @ExperimentalMaterial3Api
     private fun openDogListActivity() {
         intent = Intent(this, DogListActivity::class.java)
         startActivity(intent)

@@ -4,23 +4,62 @@ import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.View
+import androidx.activity.ComponentActivity
+import androidx.activity.compose.setContent
 import androidx.activity.viewModels
 import androidx.appcompat.app.AlertDialog
+import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.navigation.findNavController
+import coil.annotation.ExperimentalCoilApi
 import com.jhonw.dogedex.main.MainActivity
 import com.jhonw.dogedex.R
 import com.jhonw.dogedex.api.ApiResponseStatus
 import com.jhonw.dogedex.databinding.ActivityLoginBinding
+import com.jhonw.dogedex.dogdetail.ui.theme.DogedexTheme
 import com.jhonw.dogedex.model.User
 
-class LoginActivity : AppCompatActivity(), LoginFragment.LoginFragmentActions,
+@ExperimentalCoilApi
+@ExperimentalFoundationApi
+@ExperimentalMaterial3Api
+class LoginActivity : ComponentActivity(), LoginFragment.LoginFragmentActions,
     SignUpFragment.SignUpFragmentActions {
 
     private val viewModel: AuthViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        val binding = ActivityLoginBinding.inflate(layoutInflater)
+        setContent {
+            val user = viewModel.user
+
+            val userValue = user.value
+            if (userValue != null) {
+                User.setLoggedInUser(this, userValue)
+                startMainActivity()
+            }
+
+            val status = viewModel.status
+
+            DogedexTheme {
+                AuthScreen(
+                    status = status.value,
+                    onLoginButtonClick = { email, password -> viewModel.login(email, password) },
+                    onSignUpButtonClick = { email, password, confirmPassword ->
+                        viewModel.signUp(
+                            email,
+                            password,
+                            confirmPassword
+                        )
+                    },
+                    onErrorDialogDismiss = ::resetApiResponseStatus,
+                    authViewModel = viewModel,
+                )
+                //SignUpScreen()
+            }
+        }
+
+
+        /*val binding = ActivityLoginBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
         viewModel.status.observe(this) { status ->
@@ -43,7 +82,11 @@ class LoginActivity : AppCompatActivity(), LoginFragment.LoginFragmentActions,
                 User.setLoggedInUser(this, user)
                 startMainActivity()
             }
-        }
+        }*/
+    }
+
+    private fun resetApiResponseStatus() {
+        viewModel.resetApiResponseStatus()
     }
 
     private fun startMainActivity() {
@@ -70,7 +113,7 @@ class LoginActivity : AppCompatActivity(), LoginFragment.LoginFragmentActions,
     }
 
     override fun onLoginFieldsValidated(email: String, password: String) {
-        viewModel.login(email, password)
+        //viewModel.login(email, password)
     }
 
     override fun onSignUpFieldsValidated(
