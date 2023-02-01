@@ -15,26 +15,25 @@ import coil.annotation.ExperimentalCoilApi
 import com.jhonw.dogedex.dogdetail.DogDetailComposeActivity
 import com.jhonw.dogedex.dogdetail.ui.theme.DogedexTheme
 import com.jhonw.dogedex.model.Dog
+import dagger.hilt.android.AndroidEntryPoint
 
 @ExperimentalMaterial3Api
 @ExperimentalFoundationApi
 @ExperimentalCoilApi
+@AndroidEntryPoint
 class DogListActivity :
     ComponentActivity() {//se deja de usar appcompatActivity por ComponentActivity para manejar compose
 
-    private val viewModel: DogListViewModel by viewModels()
+    //private val viewModel: DogListViewModel by viewModels()//Hilt reconoce esto para la injection
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
-            val status = viewModel.status
+            //val status = viewModel.status //se comenta para ser llamados en DogListScreen a traves de hilt
             DogedexTheme {
-                val dogList = viewModel.dogList
+                //val dogList = viewModel.dogList //se comenta para ser llamados en DogListScreen a traves de hilt
                 DogListScreen(
-                    dogList = dogList.value,
                     onDogClicked = ::openDogDetailActivity,
-                    status.value,
-                    onErrorDialogDismiss = ::resetApiResponseStatus,
                     onNavigationIconClick = ::onNavigationIconClick
                 )
             }
@@ -117,9 +116,5 @@ class DogListActivity :
 
     private fun onNavigationIconClick() {
         finish()
-    }
-
-    private fun resetApiResponseStatus() {
-        viewModel.resetApiResponseStatus()
     }
 }

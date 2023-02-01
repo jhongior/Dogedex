@@ -17,8 +17,10 @@ import com.jhonw.dogedex.R
 import com.jhonw.dogedex.api.ApiResponseStatus
 import com.jhonw.dogedex.dogdetail.ui.theme.DogedexTheme
 import com.jhonw.dogedex.model.Dog
+import dagger.hilt.android.AndroidEntryPoint
 
 @ExperimentalCoilApi
+@AndroidEntryPoint
 class DogDetailComposeActivity : ComponentActivity() {
 
     companion object {

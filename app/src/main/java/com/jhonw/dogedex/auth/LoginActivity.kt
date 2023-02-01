@@ -18,10 +18,12 @@ import com.jhonw.dogedex.api.ApiResponseStatus
 import com.jhonw.dogedex.databinding.ActivityLoginBinding
 import com.jhonw.dogedex.dogdetail.ui.theme.DogedexTheme
 import com.jhonw.dogedex.model.User
+import dagger.hilt.android.AndroidEntryPoint
 
 @ExperimentalCoilApi
 @ExperimentalFoundationApi
 @ExperimentalMaterial3Api
+@AndroidEntryPoint
 class LoginActivity : ComponentActivity(), LoginFragment.LoginFragmentActions,
     SignUpFragment.SignUpFragmentActions {
 

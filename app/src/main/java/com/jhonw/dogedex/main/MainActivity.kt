@@ -35,6 +35,7 @@ import com.jhonw.dogedex.machinelearning.DogRecognition
 import com.jhonw.dogedex.model.Dog
 import com.jhonw.dogedex.model.User
 import com.jhonw.dogedex.settings.SettingsActivity
+import dagger.hilt.android.AndroidEntryPoint
 import org.tensorflow.lite.support.common.FileUtil
 import java.io.ByteArrayOutputStream
 import java.io.File
@@ -43,6 +44,7 @@ import java.util.concurrent.Executors
 
 @ExperimentalMaterial3Api
 @ExperimentalFoundationApi
+@AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
 
     private val requestPermissionLauncher =
@@ -60,7 +62,6 @@ class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
     private lateinit var imageCapture: ImageCapture
     private lateinit var cameraExecutor: ExecutorService
-    private lateinit var classifier: Classifier
     private var isCameraReady = false
     private val viewModel: MainViewModel by viewModels()
 
@@ -125,13 +126,13 @@ class MainActivity : AppCompatActivity() {
         startActivity(intent)
     }
 
-    override fun onStart() {
+    /*override fun onStart() {
         super.onStart()
         viewModel.setupClassifier(
             FileUtil.loadMappedFile(this@MainActivity, MODEL_PATH),
             FileUtil.loadLabels(this@MainActivity, LABEL_PATH)
         )
-    }
+    }*/
 
     override fun onDestroy() {
         super.onDestroy()

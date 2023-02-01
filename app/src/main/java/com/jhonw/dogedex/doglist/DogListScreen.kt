@@ -24,6 +24,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
 import coil.annotation.ExperimentalCoilApi
 import coil.compose.rememberImagePainter
 import com.jhonw.dogedex.GRID_SPAN_COUNT
@@ -40,12 +41,14 @@ import com.jhonw.dogedex.model.Dog
 @ExperimentalFoundationApi
 @Composable
 fun DogListScreen(
-    dogList: List<Dog>,
+    //dogList: List<Dog>,//ya no son necesarios usando hilt, se llama mas abajo
     onDogClicked: (Dog) -> Unit,
-    status: ApiResponseStatus<Any>? = null,
-    onErrorDialogDismiss: () -> Unit,
-    onNavigationIconClick: () -> Unit
+    //status: ApiResponseStatus<Any>? = null,//ya no son necesarios usando hilt, se llama mas abajo
+    onNavigationIconClick: () -> Unit,
+    viewModel: DogListViewModel = hiltViewModel()
 ) {
+    val status = viewModel.status.value
+    val dogList = viewModel.dogList.value
     Scaffold(
         topBar = { DogListScreenTopBar(onNavigationIconClick) }
     ) {
@@ -66,9 +69,8 @@ fun DogListScreen(
         LoadingWheel()
     } else if (status is ApiResponseStatus.Error) {
         ErrorDialog(
-            status.message,
-            onErrorDialogDismiss
-        )
+            status.message
+        ) { viewModel.resetApiResponseStatus() }
     }
 
     //le LazyColumn hace gran parte del adapter

@@ -7,22 +7,27 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.jhonw.dogedex.R
 import com.jhonw.dogedex.api.ApiResponseStatus
+import com.jhonw.dogedex.di.DogTasksModule
 import com.jhonw.dogedex.doglist.DogRepository
+import com.jhonw.dogedex.doglist.DogTasks
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
-class DogDetailViewModel : ViewModel() {
+@HiltViewModel
+class DogDetailViewModel @Inject constructor(
+    private val dogRepository: DogTasks,
+) : ViewModel() {
 
     var status = mutableStateOf<ApiResponseStatus<Any>?>(null)
         private set
 
-    private val dogRepository = DogRepository()
-
     fun addDogToUser(dogId: Long) {
-        status.value = ApiResponseStatus.Error(message = R.string.error.toString())
-        /*viewModelScope.launch {
+        //status.value = ApiResponseStatus.Error(message = R.string.error.toString())
+        viewModelScope.launch {
             status.value = ApiResponseStatus.Loading()
             handleAddDogToUserResponseStatus(dogRepository.addDogToUser(dogId))
-        }*/
+        }
     }
 
     private fun handleAddDogToUserResponseStatus(apiResponseStatus: ApiResponseStatus<Any>) {

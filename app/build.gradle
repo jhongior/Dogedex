@@ -1,9 +1,11 @@
 plugins {
     id 'com.android.application'
     id 'org.jetbrains.kotlin.android'
-    id 'kotlin-kapt'
     id 'kotlin-parcelize'
     id 'androidx.navigation.safeargs.kotlin'
+    //inyeccion pedendencias con hilt
+    id 'kotlin-kapt'
+    id 'com.google.dagger.hilt.android'
 }
 
 android {
@@ -141,4 +143,14 @@ dependencies {
     implementation 'androidx.compose.runtime:runtime-livedata'
     // Optional - Integration with RxJava
     implementation 'androidx.compose.runtime:runtime-rxjava2'
+
+    //inyeccion dependencia hilt
+    implementation("com.google.dagger:hilt-android:2.44")
+    kapt("com.google.dagger:hilt-android-compiler:2.44")
+    implementation 'androidx.hilt:hilt-navigation-compose:1.0.0'//permite integrar la inyeccion del viewmodel en el activity y con jeckpack compose
+    //TODO: para usar hilt se debe crear la clase DogedexApplication en este caso y agregarla al manifest android:name=".DogedexApplication"
+}
+
+kapt {
+    correctErrorTypes = true
 }
