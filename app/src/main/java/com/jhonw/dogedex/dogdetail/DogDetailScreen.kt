@@ -16,6 +16,8 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.semantics.testTag
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
@@ -53,7 +55,8 @@ fun DogDetailScreen(
             contentDescription = dog.name
         )
         FloatingActionButton(
-            modifier = Modifier.align(alignment = Alignment.BottomCenter),
+            modifier = Modifier.align(alignment = Alignment.BottomCenter)
+                .semantics { testTag = "close-details-screen-fab" },
             shape = MaterialTheme.shapes.small.copy(CornerSize(percent = 50)),
             onClick = { onButtonClicked() }) {
             Icon(

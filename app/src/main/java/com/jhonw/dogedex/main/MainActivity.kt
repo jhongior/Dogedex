@@ -35,6 +35,7 @@ import com.jhonw.dogedex.machinelearning.DogRecognition
 import com.jhonw.dogedex.model.Dog
 import com.jhonw.dogedex.model.User
 import com.jhonw.dogedex.settings.SettingsActivity
+import com.jhonw.dogedex.testutils.EspressoIdlingResource
 import dagger.hilt.android.AndroidEntryPoint
 import org.tensorflow.lite.support.common.FileUtil
 import java.io.ByteArrayOutputStream
@@ -154,6 +155,8 @@ class MainActivity : AppCompatActivity() {
     private fun startCamera() {
         val cameraProviderFuture = ProcessCameraProvider.getInstance(this)
 
+        //se coloca justo cuando se va a configurar la camara, el EspressoIdlingResource es para la ejecucion de procesos
+        EspressoIdlingResource.incremet()
         cameraProviderFuture.addListener({
             val cameraProvider = cameraProviderFuture.get()
             val preview = Preview.Builder().build()
@@ -165,6 +168,7 @@ class MainActivity : AppCompatActivity() {
                 .build()
             imageAnalysis.setAnalyzer(cameraExecutor) { imageProxy ->
                 //val rotationDegrees = imageProxy.imageInfo.rotationDegrees
+                EspressoIdlingResource.decremet()//cuando ya dejamos de analizar la primera imagen
                 viewModel.recognizeImage(imageProxy)
 
                 //imageProxy.close()

@@ -5,6 +5,7 @@ import android.annotation.SuppressLint
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.runtime.Composable
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -23,25 +24,37 @@ import com.jhonw.dogedex.model.User
 @ExperimentalFoundationApi
 @Composable
 fun AuthScreen(
-    status: ApiResponseStatus<User>?,
-    onLoginButtonClick: (String, String) -> Unit,
-    onSignUpButtonClick: (email: String, password: String, passwordConfirmation: String) -> Unit,
-    onErrorDialogDismiss: () -> Unit,
-    authViewModel: AuthViewModel
+    onUserLoggedIn: (User) -> Unit,
+    authViewModel: AuthViewModel = hiltViewModel()//se inject el viewmodel desde aqui para facilitar el testing
 ) {
+
+    val user = authViewModel.user
+
+    val userValue = user.value
+    if (userValue != null) {
+        onUserLoggedIn(userValue)
+    }
+
     val navController = rememberNavController()
+    val status = authViewModel.status.value
 
     AuthNavHost(
         navController = navController,
-        onLoginButtonClick = onLoginButtonClick,
-        onSignUpButtonClick = onSignUpButtonClick,
+        onLoginButtonClick = { email, password -> authViewModel.login(email, password) },
+        onSignUpButtonClick = { email, password, confirmPassword ->
+            authViewModel.signUp(
+                email,
+                password,
+                confirmPassword
+            )
+        },
         authViewModel = authViewModel
     )
 
     if (status is ApiResponseStatus.Loading)
         LoadingWheel()
     else if (status is ApiResponseStatus.Error)
-        ErrorDialog(status.message, onErrorDialogDismiss)
+        ErrorDialog(status.message) { authViewModel.resetApiResponseStatus() }
 }
 
 @ExperimentalCoilApi

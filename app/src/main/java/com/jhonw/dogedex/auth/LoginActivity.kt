@@ -24,37 +24,22 @@ import dagger.hilt.android.AndroidEntryPoint
 @ExperimentalFoundationApi
 @ExperimentalMaterial3Api
 @AndroidEntryPoint
-class LoginActivity : ComponentActivity(), LoginFragment.LoginFragmentActions,
-    SignUpFragment.SignUpFragmentActions {
-
-    private val viewModel: AuthViewModel by viewModels()
+class LoginActivity : ComponentActivity(), LoginFragment.LoginFragmentActions {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
-            val user = viewModel.user
+            /*val user = viewModel.user
 
             val userValue = user.value
             if (userValue != null) {
                 User.setLoggedInUser(this, userValue)
                 startMainActivity()
-            }
-
-            val status = viewModel.status
+            }*/
 
             DogedexTheme {
                 AuthScreen(
-                    status = status.value,
-                    onLoginButtonClick = { email, password -> viewModel.login(email, password) },
-                    onSignUpButtonClick = { email, password, confirmPassword ->
-                        viewModel.signUp(
-                            email,
-                            password,
-                            confirmPassword
-                        )
-                    },
-                    onErrorDialogDismiss = ::resetApiResponseStatus,
-                    authViewModel = viewModel,
+                    onUserLoggedIn = ::startMainActivity
                 )
                 //SignUpScreen()
             }
@@ -87,11 +72,8 @@ class LoginActivity : ComponentActivity(), LoginFragment.LoginFragmentActions,
         }*/
     }
 
-    private fun resetApiResponseStatus() {
-        viewModel.resetApiResponseStatus()
-    }
-
-    private fun startMainActivity() {
+    private fun startMainActivity(userValue: User) {
+        User.setLoggedInUser(this, userValue)
         intent = Intent(this, MainActivity::class.java)
         startActivity(intent)
         finish()
@@ -118,11 +100,11 @@ class LoginActivity : ComponentActivity(), LoginFragment.LoginFragmentActions,
         //viewModel.login(email, password)
     }
 
-    override fun onSignUpFieldsValidated(
+    /*override fun onSignUpFieldsValidated(
         email: String,
         password: String,
         passwordConfirmation: String
     ) {
         viewModel.signUp(email, password, passwordConfirmation)
-    }
+    }*/
 }
