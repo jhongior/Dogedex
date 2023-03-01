@@ -1,5 +1,6 @@
 package com.jhonw.dogedex.doglist
 
+import com.jhonw.dogedex.R
 import com.jhonw.dogedex.model.Dog
 import com.jhonw.dogedex.api.ApiResponseStatus
 import com.jhonw.dogedex.api.ApiService
@@ -9,6 +10,10 @@ import com.jhonw.dogedex.api.makeNetworkCall
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.filter
+import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.withContext
 import java.lang.Exception
 import javax.inject.Inject
@@ -17,6 +22,7 @@ interface DogTasks {
     suspend fun getDogCollection(): ApiResponseStatus<List<Dog>>
     suspend fun addDogToUser(dogId: Long): ApiResponseStatus<Any>
     suspend fun getDogByMLId(mlDogId: String): ApiResponseStatus<Dog>
+    suspend fun getProbableDogs(probableDogsId: ArrayList<String>): Flow<ApiResponseStatus<Dog>>
 }
 
 class DogRepository @Inject constructor(
@@ -108,6 +114,32 @@ class DogRepository @Inject constructor(
         val dogDTOMapper = DogDTOMapper()
         dogDTOMapper.fromDogDTOToDogDomain(response.data.dog)
     }
+
+    //los Flow trabajan algo similar a las coroutines
+    override suspend fun getProbableDogs(probableDogsId: ArrayList<String>): Flow<ApiResponseStatus<Dog>> =
+        flow {
+            //val dogDTOMapper = DogDTOMapper()
+
+            //siempre hace una peticion a la api cada que recorre un item del for, hasta que no termine con un item no sigue con el otro
+            for (mlDogId in probableDogsId) {
+
+                val dog = getDogByMLId(mlDogId)
+                emit(dog)
+                //se comenta el codigo de este metodo debido a que se puede reutilizar el metodo getDogByMLId
+                /*val response = apiService.getDogByMLId(mlDogId)
+
+                if (response.isSuccess) {
+                    emit(ApiResponseStatus.Success(dogDTOMapper.fromDogDTOToDogDomain(response.data.dog)))
+                } else {
+                    emit(ApiResponseStatus.Error(R.string.there_was_an_error.toString()))
+                }*/
+            }
+        }.flowOn(dispatcher)//cuando implementamos flow tenemos que decirle en que dispatcher va a correr, en este caso IO que es para descargar datos, los flow
+    //corren de abajo hacia arriba, es decir primero se ejecuta todo lo que este dentro del dispatcher
+
+    /*.filter {//se pueden filtar diferentes datos con ayuda de esto
+            it is ApiResponseStatus.Success
+        }*/
 
     private fun getFakeDogs(): MutableList<Dog> {
         val dogList = mutableListOf<Dog>()

@@ -19,6 +19,7 @@ import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.LifecycleOwner
+import coil.annotation.ExperimentalCoilApi
 import com.hackaprende.dogedex.machinelearning.Classifier
 import com.jhonw.dogedex.*
 import com.jhonw.dogedex.R
@@ -120,9 +121,14 @@ class MainActivity : AppCompatActivity() {
         requestCameraPermission()
     }
 
+    @ExperimentalCoilApi
     private fun openDogDetailActivity(dog: Dog) {
         val intent = Intent(this, DogDetailComposeActivity::class.java)
         intent.putExtra(DogDetailComposeActivity.DOG_KEY, dog)
+        intent.putExtra(
+            DogDetailComposeActivity.MOST_PROBABLE_DOGS_IDS,
+            ArrayList<String>(viewModel.probableDogIds)
+        )
         intent.putExtra(DogDetailComposeActivity.IS_RECOGNITION_KEY, true)
         startActivity(intent)
     }

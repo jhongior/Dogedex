@@ -35,4 +35,9 @@
     <string name="sign_up">Sign Up</string>
     <string name="do_not_have_an_account">Do Not Have An Account</string>
     <string name="register">Register</string>
+    <string name="not_your_dog_button">Not your dog? Tap to see other probable dogs</string>
+    <string name="other_probable_dogs">Other probable dogs</string>
+    <string name="dismiss">My dog is not here</string>
+    <string name="there_was_an_error">There was an errror</string>
+    <string name="unknown_host_exception_error">Unknown host exception error</string>
 </resources>

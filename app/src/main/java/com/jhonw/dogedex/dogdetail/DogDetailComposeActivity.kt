@@ -25,6 +25,7 @@ class DogDetailComposeActivity : ComponentActivity() {
 
     companion object {
         const val DOG_KEY = "dog"
+        const val MOST_PROBABLE_DOGS_IDS = "most_probable_dogs_ids"
         const val IS_RECOGNITION_KEY = "is_recognition"
     }
 
@@ -33,7 +34,10 @@ class DogDetailComposeActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        val dog = intent?.extras?.getParcelable<Dog>(DOG_KEY)
+        //se comenta este fragmento por que ya se envia y recibe la intent con savedStateHandle
+        /*val dog = intent?.extras?.getParcelable<Dog>(DOG_KEY)
+        val probableDogsIds =
+            intent?.extras?.getStringArrayList(MOST_PROBABLE_DOGS_IDS) ?: listOf()
         val isRecognition =
             intent?.extras?.getBoolean(IS_RECOGNITION_KEY, false) ?: false
 
@@ -41,26 +45,29 @@ class DogDetailComposeActivity : ComponentActivity() {
             Toast.makeText(this, R.string.error_showing_dog_not_found, Toast.LENGTH_LONG).show()
             finish()
             return
-        }
+        }*/
 
         setContent {
-            val status = viewModel.status
+            //se comenta esta parte por que ya se llama el detailViewModel desde el DogDetailScreen
+            /*val status = viewModel.status
             if (status.value is ApiResponseStatus.Success) {
                 finish()
-            } else {
-                DogedexTheme {
-                    DogDetailScreen(
-                        dog = dog,
-                        status = status.value,
-                        onButtonClicked = {
-                            onButtonClicked(dog.id, isRecognition)
-                        },
-                        onErrorDialogDismiss = {
-                            resetApiResponseStatus()
-                        }
-                    )
-                }
+            } else {*/
+            DogedexTheme {
+                DogDetailScreen(
+                    //dog = dog,se envia con savedStateHandle
+                    //probableDogIds = probableDogsIds,
+                    //isRecognition = isRecognition,
+                    //status = status.value,
+                    /*onButtonClicked = {
+                        onButtonClicked(dog.id, isRecognition)
+                    },*/
+                    onErrorDialogDismiss = ::resetApiResponseStatus,//este se envia pero igual ya se puede llamar
+                    //desde el detailScreen al llamar el hiltViewModel
+                    finishActivity = { finish() }
+                )
             }
+            //}
         }
     }
 
@@ -70,7 +77,7 @@ class DogDetailComposeActivity : ComponentActivity() {
 
     private fun onButtonClicked(dogId: Long, isRecognition: Boolean) {
         if (isRecognition)
-            viewModel.addDogToUser(dogId)
+            viewModel.addDogToUser()
         else
             finish()
     }
